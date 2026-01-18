@@ -604,8 +604,8 @@ body {
 .station-marker {
   cursor: pointer;
   position: relative;
-  width: 22px;
-  height: 22px;
+  width: 0;
+  height: 0;
 }
 
 .elizabeth-line-icon {
@@ -613,12 +613,16 @@ body {
   height: 22px;
   display: block;
   filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.2));
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform: translate(-50%, -50%);
 }
 
 .station-marker-name {
   position: absolute;
-  left: calc(100% + 6px);
-  top: 50%;
+  left: calc(11px + 6px);
+  top: 0;
   transform: translateY(-50%);
   font-size: 0.75rem;
   font-weight: 600;
