@@ -557,6 +557,29 @@ body {
   height: 100%;
 }
 
+#map-drawer-handle {
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 48px;
+  height: 6px;
+  border-radius: 999px;
+  border: none;
+  background: rgba(15, 23, 42, 0.25);
+  z-index: 5;
+  cursor: pointer;
+  display: none;
+}
+
+.pte-marker {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  object-fit: cover;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.25);
+}
+
 /* Custom Mapbox Markers */
 .hotel-marker {
   cursor: pointer;
@@ -667,13 +690,13 @@ body {
 
   #sidebar {
     width: 100%;
-    height: 50vh;
+    height: calc(100vh - var(--map-height, 50vh));
     border-right: none;
     border-bottom: 1px solid var(--color-border);
   }
 
   #map-container {
-    height: 50vh;
+    height: var(--map-height, 50vh);
   }
 
   .hotel-card {
@@ -692,4 +715,16 @@ body {
   .photo-lightbox-close {
     top: -36px;
   }
+
+  #map-drawer-handle {
+    display: block;
+  }
+}
+
+body.map-drawer-min {
+  --map-height: 28vh;
+}
+
+body.map-drawer-max {
+  --map-height: 62vh;
 }

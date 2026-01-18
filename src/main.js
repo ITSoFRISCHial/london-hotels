@@ -2,6 +2,7 @@ import mapboxgl from 'mapbox-gl';
 import './styles.css';
 import { hotels, elizabethLineStations, verdictOrder, verdictColors } from './data/hotels.js';
 import elizabethLineIconUrl from '../Elizabeth_line_roundel_(no_text).svg';
+import pteLogoUrl from './img/PTE-World-2026-logo.jpeg';
 
 // You'll need to replace this with your actual Mapbox token
 // For production, use environment variables
@@ -23,11 +24,13 @@ const ELIZABETH_LINE_TIMES = {
   'tottenham-court-road': { train: 16, totalOffset: 28 },
   'bond-street': { train: 17, totalOffset: 25 }
 };
+const MOBILE_QUERY = '(max-width: 768px)';
 
 // Initialize the application
 function init() {
   initMap();
   renderHotelList();
+  initMapDrawer();
 }
 
 // Initialize Mapbox map
@@ -42,6 +45,7 @@ function initMap() {
   map.on('load', () => {
     addHotelMarkers();
     addStationMarkers();
+    addPteMarker();
   });
 
   // Add navigation controls
@@ -101,6 +105,50 @@ function addStationMarkers() {
       .setLngLat(station.coordinates)
       .addTo(map);
   });
+}
+
+function addPteMarker() {
+  const el = document.createElement('img');
+  el.className = 'pte-marker';
+  el.src = pteLogoUrl;
+  el.alt = 'PTE World 2026';
+
+  new mapboxgl.Marker({ element: el, anchor: 'center' })
+    .setLngLat([0.029086, 51.508211])
+    .addTo(map);
+}
+
+function initMapDrawer() {
+  const handle = document.getElementById('map-drawer-handle');
+  if (!handle) return;
+
+  handle.addEventListener('click', () => {
+    const isMinimized = document.body.classList.contains('map-drawer-min');
+    setMapDrawerState(isMinimized ? 'max' : 'min');
+  });
+
+  window.addEventListener('resize', () => {
+    if (!window.matchMedia(MOBILE_QUERY).matches) {
+      document.body.classList.remove('map-drawer-min', 'map-drawer-max');
+      map?.resize();
+      return;
+    }
+    if (!document.body.classList.contains('map-drawer-min') &&
+        !document.body.classList.contains('map-drawer-max')) {
+      setMapDrawerState('max');
+    }
+  });
+
+  if (window.matchMedia(MOBILE_QUERY).matches) {
+    setMapDrawerState('max');
+  }
+}
+
+function setMapDrawerState(state) {
+  if (!window.matchMedia(MOBILE_QUERY).matches) return;
+  document.body.classList.toggle('map-drawer-min', state === 'min');
+  document.body.classList.toggle('map-drawer-max', state === 'max');
+  window.setTimeout(() => map?.resize(), 200);
 }
 
 // Render hotel list in sidebar
@@ -224,6 +272,7 @@ async function showHotelDetail(hotelId) {
 
   // Render detail view
   renderHotelDetail(hotel, nearestStation, routeData);
+  setMapDrawerState('min');
 
   // Draw route on map
   if (routeData) {
@@ -633,6 +682,7 @@ window.backToList = function() {
   });
 
   renderHotelList();
+  setMapDrawerState('max');
 };
 
 // Initialize on DOM ready
