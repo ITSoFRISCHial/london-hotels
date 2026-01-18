@@ -93,10 +93,8 @@ function addStationMarkers() {
     const el = document.createElement('div');
     el.className = 'station-marker';
     el.innerHTML = `
-      <div class="station-marker-content">
-        <img class="elizabeth-line-icon" src="${elizabethLineIconUrl}" alt="" />
-        <span class="station-marker-name">${station.name}</span>
-      </div>
+      <img class="elizabeth-line-icon" src="${elizabethLineIconUrl}" alt="" />
+      <span class="station-marker-name">${station.name}</span>
     `;
 
     new mapboxgl.Marker({ element: el, anchor: 'center' })
