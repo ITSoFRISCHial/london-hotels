@@ -697,10 +697,16 @@ body {
     border-right: none;
     border-bottom: 1px solid var(--color-border);
     order: 1;
+    overflow-y: auto;
   }
 
   #map-container {
     height: var(--map-height, 40vh);
+  }
+
+  #sidebar-content {
+    flex: 0 0 auto;
+    overflow: visible;
   }
 
   .hotel-card {
@@ -722,6 +728,9 @@ body {
 
   #map-drawer-handle {
     display: block;
+    position: sticky;
+    top: 8px;
+    z-index: 2;
   }
 }
 
@@ -738,7 +747,12 @@ body.map-drawer-detail {
 }
 
 @media (max-width: 768px) {
-  body.map-drawer-detail .sidebar-header {
+  body.map-drawer-detail .sidebar-header,
+  body.map-drawer-detail-map .sidebar-header {
     display: none;
   }
+}
+
+body.map-drawer-detail-map {
+  --map-height: 40vh;
 }

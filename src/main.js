@@ -18,6 +18,7 @@ let lightboxState = {
   images: [],
   index: 0
 };
+let detailMapContext = null;
 
 const PRICE_NOTE = 'for 3/16-3/21 (updated 1/18/26)';
 const ELIZABETH_LINE_TIMES = {
@@ -25,6 +26,7 @@ const ELIZABETH_LINE_TIMES = {
   'bond-street': { train: 17, totalOffset: 25 }
 };
 const MOBILE_QUERY = '(max-width: 768px)';
+const DETAIL_BOUNDS_PADDING = { top: 40, bottom: 40, left: 40, right: 40 };
 
 // Initialize the application
 function init() {
@@ -125,7 +127,11 @@ function initMapDrawer() {
   handle.addEventListener('click', () => {
     if (!window.matchMedia(MOBILE_QUERY).matches) return;
     if (document.body.classList.contains('map-drawer-detail')) {
-      setMapDrawerState('list');
+      setMapDrawerState('detail-map');
+      return;
+    }
+    if (document.body.classList.contains('map-drawer-detail-map')) {
+      setMapDrawerState('detail');
       return;
     }
     const isExpanded = document.body.classList.contains('map-drawer-expanded');
@@ -134,13 +140,14 @@ function initMapDrawer() {
 
   window.addEventListener('resize', () => {
     if (!window.matchMedia(MOBILE_QUERY).matches) {
-      document.body.classList.remove('map-drawer-list', 'map-drawer-expanded', 'map-drawer-detail');
+      document.body.classList.remove('map-drawer-list', 'map-drawer-expanded', 'map-drawer-detail', 'map-drawer-detail-map');
       map?.resize();
       return;
     }
     if (!document.body.classList.contains('map-drawer-list') &&
         !document.body.classList.contains('map-drawer-expanded') &&
-        !document.body.classList.contains('map-drawer-detail')) {
+        !document.body.classList.contains('map-drawer-detail') &&
+        !document.body.classList.contains('map-drawer-detail-map')) {
       setMapDrawerState('list');
     }
   });
@@ -157,7 +164,13 @@ function setMapDrawerState(state) {
   document.body.classList.toggle('map-drawer-list', state === 'list');
   document.body.classList.toggle('map-drawer-expanded', state === 'expanded');
   document.body.classList.toggle('map-drawer-detail', state === 'detail');
+  document.body.classList.toggle('map-drawer-detail-map', state === 'detail-map');
   window.setTimeout(() => map?.resize(), 200);
+  window.setTimeout(() => {
+    if (detailMapContext && (state === 'detail' || state === 'detail-map')) {
+      focusDetailMap(detailMapContext.hotel, detailMapContext.station);
+    }
+  }, 240);
 }
 
 function initDrawerSwipe(handle) {
@@ -189,7 +202,14 @@ function initDrawerSwipe(handle) {
 
     if (document.body.classList.contains('map-drawer-detail')) {
       if (deltaY > threshold) {
-        setMapDrawerState('list');
+        setMapDrawerState('detail-map');
+      }
+      return;
+    }
+
+    if (document.body.classList.contains('map-drawer-detail-map')) {
+      if (deltaY < -threshold) {
+        setMapDrawerState('detail');
       }
       return;
     }
@@ -313,20 +333,15 @@ async function showHotelDetail(hotelId) {
 
   selectedHotelId = hotelId;
 
-  // Pan map to hotel
-  map.flyTo({
-    center: hotel.coordinates,
-    zoom: 15,
-    duration: 1000
-  });
-
   // Get nearest station and fetch route
   const nearestStation = getNearestStation(hotel.coordinates);
   const routeData = await fetchWalkingRoute(nearestStation.coordinates, hotel.coordinates);
 
   // Render detail view
   renderHotelDetail(hotel, nearestStation, routeData);
+  detailMapContext = { hotel, station: nearestStation };
   setMapDrawerState('detail');
+  focusDetailMap(hotel, nearestStation);
 
   // Draw route on map
   if (routeData) {
@@ -348,6 +363,17 @@ function getNearestStation(hotelCoords) {
   });
 
   return nearest;
+}
+
+function focusDetailMap(hotel, station) {
+  if (!map || !hotel || !station) return;
+  const bounds = new mapboxgl.LngLatBounds();
+  bounds.extend(hotel.coordinates);
+  bounds.extend(station.coordinates);
+  map.fitBounds(bounds, {
+    padding: DETAIL_BOUNDS_PADDING,
+    duration: 800
+  });
 }
 
 // Calculate distance between two coordinates (Haversine formula)
@@ -721,6 +747,7 @@ function updateLightbox() {
 // Back to list function (exposed globally for onclick)
 window.backToList = function() {
   selectedHotelId = null;
+  detailMapContext = null;
 
   // Remove route from map
   if (map.getSource('route')) {
