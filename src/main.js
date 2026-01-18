@@ -12,6 +12,12 @@ let map;
 let currentRoute = null;
 let markers = [];
 let selectedHotelId = null;
+let lightboxState = {
+  images: [],
+  index: 0
+};
+
+const PRICE_NOTE = 'for 3/16-3/21 (updated 1/18/26)';
 
 // Initialize the application
 function init() {
@@ -138,48 +144,59 @@ function renderHotelList() {
 
 // Create hotel card HTML
 function createHotelCard(hotel) {
-  const ratingHtml = hotel.tripAdvisorRating
+  const rating = hotel.tripAdvisor?.rating;
+  const ratingHtml = rating
     ? `<span class="hotel-meta-item">
          <svg width="12" height="12" viewBox="0 0 20 20" fill="#fbbf24"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-         ${hotel.tripAdvisorRating}
+         ${rating}
        </span>`
     : '';
 
   const priceHtml = hotel.price
-    ? `<span class="hotel-meta-item">${hotel.price}</span>`
+    ? `<span class="hotel-meta-item price-meta">${hotel.price}/night <span class="price-note">3/16-3/21 (updated 1/18/26)</span></span>`
     : '';
+
+  const thumbnail = hotel.thumbnail || hotel.images?.[0];
+  const thumbnailHtml = thumbnail
+    ? `<img src="${thumbnail}" alt="${hotel.name} thumbnail" loading="lazy" />`
+    : `<div class="hotel-thumb-placeholder" aria-hidden="true"></div>`;
 
   return `
     <div class="hotel-card" data-hotel-id="${hotel.id}">
-      <div class="hotel-card-header">
-        <div>
-          <div class="hotel-name">${hotel.name}</div>
-          <div class="hotel-neighborhood">${hotel.neighborhood}</div>
-        </div>
-        <div class="score-item">
-          <span class="score-value">${hotel.scores.overall}</span>
-        </div>
+      <div class="hotel-card-thumb">
+        ${thumbnailHtml}
       </div>
-      <div class="hotel-scores">
-        <span class="score-item">Arch <span class="score-value">${hotel.scores.architectural}</span></span>
-        <span class="score-item">Int <span class="score-value">${hotel.scores.interior}</span></span>
-        <span class="score-item">Area <span class="score-value">${hotel.scores.neighborhood}</span></span>
-      </div>
-      ${(ratingHtml || priceHtml || hotel.elizabethLine) ? `
-        <div class="hotel-meta">
-          ${ratingHtml}
-          ${priceHtml}
-          ${hotel.elizabethLine ? `
-            <span class="hotel-meta-item">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="10"/>
-                <path d="M12 6v6l4 2"/>
-              </svg>
-              ${hotel.elizabethLine.walkTime} to ${hotel.elizabethLine.station}
-            </span>
-          ` : ''}
+      <div class="hotel-card-body">
+        <div class="hotel-card-header">
+          <div>
+            <div class="hotel-name">${hotel.name}</div>
+            <div class="hotel-neighborhood">${hotel.neighborhood}</div>
+          </div>
+          <div class="score-item">
+            <span class="score-value">${hotel.scores.overall}</span>
+          </div>
         </div>
-      ` : ''}
+        <div class="hotel-scores">
+          <span class="score-item">Arch <span class="score-value">${hotel.scores.architectural}</span></span>
+          <span class="score-item">Int <span class="score-value">${hotel.scores.interior}</span></span>
+          <span class="score-item">Area <span class="score-value">${hotel.scores.neighborhood}</span></span>
+        </div>
+        ${(ratingHtml || priceHtml || hotel.elizabethLine) ? `
+          <div class="hotel-meta">
+            ${ratingHtml}
+            ${priceHtml}
+            ${hotel.elizabethLine ? `
+              <span class="hotel-meta-item">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"/>
+                  <path d="M12 6v6l4 2"/>
+                </svg>
+                ${hotel.elizabethLine.walkTime} to ${hotel.elizabethLine.station}
+              </span>
+            ` : ''}
+          </div>
+        ` : ''}
+      </div>
     </div>
   `;
 }
@@ -303,15 +320,40 @@ function renderHotelDetail(hotel, nearestStation, routeData) {
                           verdictClass === 'good-match' ? 'good' : 'marginal';
   const verdictColor = verdictColors[hotel.verdict];
 
-  const ratingHtml = hotel.tripAdvisorRating
+  const rating = hotel.tripAdvisor?.rating;
+  const ratingHtml = rating
     ? `<span class="detail-badge rating">
          <svg width="12" height="12" viewBox="0 0 20 20" fill="#fbbf24" style="margin-right: 4px;"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-         ${hotel.tripAdvisorRating} TripAdvisor
+         ${rating} TripAdvisor
        </span>`
     : '';
 
   const priceHtml = hotel.price
     ? `<span class="detail-badge price">${hotel.price}/night</span>`
+    : '';
+
+  const priceNoteHtml = hotel.price
+    ? `<div class="detail-price-note">
+         <span>Rate is ${hotel.price}/night ${PRICE_NOTE}.</span>
+         ${hotel.tripAdvisor?.url ? `<a href="${hotel.tripAdvisor.url}" target="_blank" rel="noopener">Check TripAdvisor for latest price</a>` : ''}
+       </div>`
+    : '';
+
+  const galleryHtml = hotel.images?.length
+    ? `
+      <div class="detail-gallery">
+        <div class="detail-gallery-main">
+          <img src="${hotel.images[0]}" alt="${hotel.name} photo" data-gallery-index="0" loading="lazy" />
+        </div>
+        <div class="detail-gallery-thumbs">
+          ${hotel.images.map((src, idx) => `
+            <button class="detail-thumb ${idx === 0 ? 'active' : ''}" data-gallery-index="${idx}" aria-label="View photo ${idx + 1}">
+              <img src="${src}" alt="${hotel.name} thumbnail ${idx + 1}" loading="lazy" />
+            </button>
+          `).join('')}
+        </div>
+      </div>
+    `
     : '';
 
   const routeHtml = routeData
@@ -355,7 +397,10 @@ function renderHotelDetail(hotel, nearestStation, routeData) {
           ${ratingHtml}
           ${priceHtml}
         </div>
+        ${priceNoteHtml}
       </div>
+
+      ${galleryHtml}
 
       ${routeHtml}
 
@@ -382,6 +427,13 @@ function renderHotelDetail(hotel, nearestStation, routeData) {
         <h3 class="detail-section-title">Summary</h3>
         <p class="detail-section-content">${hotel.summary}</p>
       </div>
+
+      ${hotel.tripAdvisorDescription ? `
+        <div class="detail-section">
+          <h3 class="detail-section-title">Tripadvisor Description</h3>
+          <p class="detail-section-content">${hotel.tripAdvisorDescription}</p>
+        </div>
+      ` : ''}
 
       <div class="detail-section">
         <h3 class="detail-section-title">Exterior & Urban Presence</h3>
@@ -428,6 +480,118 @@ function renderHotelDetail(hotel, nearestStation, routeData) {
       </div>
     </div>
   `;
+
+  initGallery(container, hotel);
+}
+
+function initGallery(container, hotel) {
+  if (!hotel.images || hotel.images.length === 0) return;
+
+  const mainImage = container.querySelector('.detail-gallery-main img');
+  const thumbButtons = Array.from(container.querySelectorAll('.detail-thumb'));
+
+  if (!mainImage || thumbButtons.length === 0) return;
+
+  const setActive = (index) => {
+    const nextImage = hotel.images[index];
+    if (!nextImage) return;
+    mainImage.src = nextImage;
+    mainImage.dataset.galleryIndex = index;
+    thumbButtons.forEach((button) => {
+      button.classList.toggle('active', Number(button.dataset.galleryIndex) === index);
+    });
+  };
+
+  mainImage.addEventListener('click', () => {
+    const index = Number(mainImage.dataset.galleryIndex || 0);
+    openLightbox(hotel.images, index);
+  });
+
+  thumbButtons.forEach((button) => {
+    button.addEventListener('click', () => {
+      const index = Number(button.dataset.galleryIndex || 0);
+      setActive(index);
+      openLightbox(hotel.images, index);
+    });
+  });
+}
+
+function ensureLightbox() {
+  let lightbox = document.querySelector('.photo-lightbox');
+  if (lightbox) return lightbox;
+
+  lightbox = document.createElement('div');
+  lightbox.className = 'photo-lightbox';
+  lightbox.innerHTML = `
+    <div class="photo-lightbox-backdrop" data-lightbox-close="true"></div>
+    <div class="photo-lightbox-content">
+      <button class="photo-lightbox-close" aria-label="Close photo viewer" data-lightbox-close="true">×</button>
+      <button class="photo-lightbox-nav prev" aria-label="Previous photo">‹</button>
+      <img class="photo-lightbox-image" alt="Hotel photo" />
+      <button class="photo-lightbox-nav next" aria-label="Next photo">›</button>
+      <div class="photo-lightbox-count"></div>
+    </div>
+  `;
+
+  document.body.appendChild(lightbox);
+
+  lightbox.addEventListener('click', (event) => {
+    const target = event.target;
+    if (target && target.dataset.lightboxClose === 'true') {
+      closeLightbox();
+    }
+  });
+
+  lightbox.querySelector('.photo-lightbox-nav.prev').addEventListener('click', (event) => {
+    event.stopPropagation();
+    stepLightbox(-1);
+  });
+
+  lightbox.querySelector('.photo-lightbox-nav.next').addEventListener('click', (event) => {
+    event.stopPropagation();
+    stepLightbox(1);
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (!lightbox.classList.contains('open')) return;
+    if (event.key === 'Escape') closeLightbox();
+    if (event.key === 'ArrowLeft') stepLightbox(-1);
+    if (event.key === 'ArrowRight') stepLightbox(1);
+  });
+
+  return lightbox;
+}
+
+function openLightbox(images, index) {
+  if (!images || images.length === 0) return;
+  lightboxState = { images, index: Number(index) || 0 };
+
+  const lightbox = ensureLightbox();
+  updateLightbox();
+  lightbox.classList.add('open');
+}
+
+function closeLightbox() {
+  const lightbox = document.querySelector('.photo-lightbox');
+  if (lightbox) lightbox.classList.remove('open');
+}
+
+function stepLightbox(delta) {
+  const count = lightboxState.images.length;
+  if (count === 0) return;
+  const nextIndex = (lightboxState.index + delta + count) % count;
+  lightboxState.index = nextIndex;
+  updateLightbox();
+}
+
+function updateLightbox() {
+  const lightbox = document.querySelector('.photo-lightbox');
+  if (!lightbox) return;
+  const imageEl = lightbox.querySelector('.photo-lightbox-image');
+  const countEl = lightbox.querySelector('.photo-lightbox-count');
+  const src = lightboxState.images[lightboxState.index];
+  if (imageEl && src) imageEl.src = src;
+  if (countEl) countEl.textContent = `${lightboxState.index + 1} / ${lightboxState.images.length}`;
 }
 
 // Back to list function (exposed globally for onclick)
