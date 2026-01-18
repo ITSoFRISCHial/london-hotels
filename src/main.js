@@ -23,7 +23,7 @@ function init() {
 function initMap() {
   map = new mapboxgl.Map({
     container: 'map',
-    style: 'mapbox://styles/mapbox/light-v11',
+    style: 'mapbox://styles/gadol87/cmdeqv1ux000o01s0dzkjhhqp',
     center: [-0.135, 51.515], // Center of London hotel area
     zoom: 14
   });
@@ -42,7 +42,7 @@ function addHotelMarkers() {
   hotels.forEach(hotel => {
     const el = createHotelMarker(hotel);
 
-    const marker = new mapboxgl.Marker({ element: el, anchor: 'bottom' })
+    const marker = new mapboxgl.Marker({ element: el, anchor: 'left' })
       .setLngLat(hotel.coordinates)
       .addTo(map);
 
@@ -63,26 +63,13 @@ function createHotelMarker(hotel) {
   const verdictCssClass = verdictClass === 'strong-match' ? 'strong' :
                           verdictClass === 'good-match' ? 'good' : 'marginal';
 
-  const ratingHtml = hotel.tripAdvisorRating
-    ? `<span class="hotel-marker-rating">
-         <svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-         ${hotel.tripAdvisorRating}
-       </span>`
-    : '';
-
-  const priceHtml = hotel.price
-    ? `<span class="hotel-marker-price">${hotel.price}</span>`
-    : '';
+  // Get TripAdvisor rating from the tripAdvisor object
+  const rating = hotel.tripAdvisor?.rating || hotel.tripAdvisorRating || '';
 
   el.innerHTML = `
-    <div class="hotel-marker-content ${verdictCssClass}">
-      <div class="hotel-marker-name">${hotel.name}</div>
-      ${(ratingHtml || priceHtml) ? `
-        <div class="hotel-marker-meta">
-          ${ratingHtml}
-          ${priceHtml}
-        </div>
-      ` : ''}
+    <div class="hotel-marker-content">
+      <div class="hotel-marker-circle ${verdictCssClass}">${rating}</div>
+      <span class="hotel-marker-name">${hotel.name}</span>
     </div>
   `;
 

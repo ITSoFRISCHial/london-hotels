@@ -399,63 +399,41 @@ body {
 }
 
 .hotel-marker-content {
-  background: white;
-  border: 2px solid;
-  border-radius: 8px;
-  padding: 6px 10px;
-  box-shadow: var(--shadow-md);
+  display: flex;
+  align-items: center;
+  gap: 6px;
   font-family: 'Inter', sans-serif;
   white-space: nowrap;
-  transform: translate(-50%, -100%);
-  margin-top: -8px;
 }
 
-.hotel-marker-content.strong { border-color: var(--color-strong); }
-.hotel-marker-content.good { border-color: var(--color-good); }
-.hotel-marker-content.marginal { border-color: var(--color-marginal); }
+.hotel-marker-circle {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 700;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  flex-shrink: 0;
+}
+
+.hotel-marker-circle.strong { background: var(--color-strong); }
+.hotel-marker-circle.good { background: var(--color-good); }
+.hotel-marker-circle.marginal { background: var(--color-marginal); }
 
 .hotel-marker-name {
   font-size: 0.75rem;
   font-weight: 600;
   color: var(--color-text);
-  margin-bottom: 2px;
-}
-
-.hotel-marker-meta {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.625rem;
-  color: var(--color-text-secondary);
-}
-
-.hotel-marker-rating {
-  display: flex;
-  align-items: center;
-  gap: 2px;
-}
-
-.hotel-marker-rating svg {
-  width: 10px;
-  height: 10px;
-  color: #fbbf24;
-}
-
-.hotel-marker-price {
-  font-weight: 500;
-}
-
-.hotel-marker::after {
-  content: '';
-  position: absolute;
-  bottom: -8px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 0;
-  height: 0;
-  border-left: 6px solid transparent;
-  border-right: 6px solid transparent;
-  border-top: 8px solid white;
+  text-shadow:
+    -1px -1px 0 white,
+    1px -1px 0 white,
+    -1px 1px 0 white,
+    1px 1px 0 white,
+    0 0 4px white;
 }
 
 /* Station Marker */

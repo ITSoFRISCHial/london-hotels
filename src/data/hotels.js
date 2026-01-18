@@ -28,7 +28,11 @@ export const hotels = [
     strengths: ['Landmark presence + genuinely memorable public interiors', 'Very "of London"'],
     weaknesses: ['Can feel social/scene-forward', 'Noise risk if you draw a bad room'],
     price: null,
-    tripAdvisorRating: null
+    tripAdvisor: {
+      rating: 4.5,
+      reviews: 1710,
+      url: 'https://www.tripadvisor.com/Hotel_Review-g186338-d4889797-Reviews-The_London_EDITION-London_England.html'
+    }
   },
   {
     id: 'resident-soho',
@@ -59,7 +63,11 @@ export const hotels = [
     strengths: ['Location', 'Calm rooms relative to Soho', 'Practical comforts'],
     weaknesses: ['Not architecturally inspiring', 'No real lobby/bar as a design destination'],
     price: null,
-    tripAdvisorRating: null
+    tripAdvisor: {
+      rating: 4.8,
+      reviews: 4433,
+      url: 'https://www.tripadvisor.com/Hotel_Review-g186338-d2406203-Reviews-The_Resident_Soho-London_England.html'
+    }
   },
   {
     id: 'radisson-blu-mercer',
@@ -90,7 +98,11 @@ export const hotels = [
     strengths: ['Location', 'Convenient West End base'],
     weaknesses: ['Chain feel', 'Noise risk', 'Rooms can feel cramped/un-special'],
     price: null,
-    tripAdvisorRating: null
+    tripAdvisor: {
+      rating: 4.5,
+      reviews: 5040,
+      url: 'https://www.tripadvisor.com/Hotel_Review-g186338-d1799756-Reviews-Radisson_Blu_Hotel_London_Mercer_Street-London_England.html'
+    }
   },
   {
     id: 'bloomsbury-hotel',
@@ -121,7 +133,11 @@ export const hotels = [
     strengths: ['Legit architectural significance', 'Strong sense of place', 'Excellent lounge culture'],
     weaknesses: ['Potential street/window noise in some rooms', 'Can feel "hotel-ish" in parts after renovations'],
     price: null,
-    tripAdvisorRating: null
+    tripAdvisor: {
+      rating: 4.7,
+      reviews: 5714,
+      url: 'https://www.tripadvisor.com/Hotel_Review-g186338-d192771-Reviews-The_Bloomsbury-London_England.html'
+    }
   },
   {
     id: 'marylebone-hotel',
@@ -152,11 +168,15 @@ export const hotels = [
     strengths: ['Neighborhood + walkability', 'Polished, comfortable interiors', 'Good bar'],
     weaknesses: ['Won\'t scratch the "distinct architecture" itch like EDITION/Bloomsbury'],
     price: null,
-    tripAdvisorRating: null
+    tripAdvisor: {
+      rating: 4.7,
+      reviews: 6137,
+      url: 'https://www.tripadvisor.com/Hotel_Review-g186338-d192702-Reviews-The_Marylebone-London_England.html'
+    }
   },
   {
     id: 'botree',
-    name: 'The BoTree London, Curio Collection by Hilton',
+    name: 'The BoTree London',
     neighborhood: 'Marylebone/Mayfair edge',
     address: '10 Wigmore Street',
     coordinates: [-0.147413, 51.516616],
@@ -183,7 +203,11 @@ export const hotels = [
     strengths: ['Legit design authorship', 'Prime seam-location', 'Modern but not sterile'],
     weaknesses: ['If you want historic bones, it won\'t compete with Bloomsbury/EDITION'],
     price: null,
-    tripAdvisorRating: null
+    tripAdvisor: {
+      rating: 4.6,
+      reviews: 145,
+      url: 'https://www.tripadvisor.com/Hotel_Review-g186338-d25257438-Reviews-The_BoTree_London-London_England.html'
+    }
   },
   {
     id: 'welbeck-hotel',
@@ -214,7 +238,11 @@ export const hotels = [
     strengths: ['Big location payoff', 'Thoughtful renovation', 'Nice bar/lobby for evenings'],
     weaknesses: ['Design ambition may not fully escape its "ex-chain" DNA'],
     price: null,
-    tripAdvisorRating: null
+    tripAdvisor: {
+      rating: 4.6,
+      reviews: 72,
+      url: 'https://www.tripadvisor.com/Hotel_Review-g186338-d199119-Reviews-The_Welbeck_Hotel-London_England.html'
+    }
   },
   {
     id: 'biltmore-mayfair',
@@ -245,7 +273,11 @@ export const hotels = [
     strengths: ['Strong Mayfair presence', 'Thoughtful interiors', 'Excellent context'],
     weaknesses: ['Design ambition is one notch below the most daring London hotels'],
     price: null,
-    tripAdvisorRating: null
+    tripAdvisor: {
+      rating: 4.4,
+      reviews: 335,
+      url: 'https://www.tripadvisor.com/Hotel_Review-g186338-d17150006-Reviews-The_Biltmore_Mayfair-London_England.html'
+    }
   },
   {
     id: 'chesterfield-mayfair',
@@ -276,7 +308,11 @@ export const hotels = [
     strengths: ['Very pleasant, quintessentially British', 'Excellent service/comfort'],
     weaknesses: ['Not a "design statement"', 'More historic boutique comfort than architecturally exciting'],
     price: null,
-    tripAdvisorRating: null
+    tripAdvisor: {
+      rating: 4.8,
+      reviews: 5828,
+      url: 'https://www.tripadvisor.com/Hotel_Review-g186338-d192064-Reviews-The_Chesterfield_Mayfair-London_England.html'
+    }
   },
   {
     id: 'langham-london',
@@ -307,7 +343,11 @@ export const hotels = [
     strengths: ['Iconic architectural landmark with layered interiors', 'Deep sense of place'],
     weaknesses: ['As classic luxury, some public spaces can feel traditional rather than conceptually experimental'],
     price: null,
-    tripAdvisorRating: null
+    tripAdvisor: {
+      rating: 4.7,
+      reviews: 2692,
+      url: 'https://www.tripadvisor.com/Hotel_Review-g186338-d187569-Reviews-The_Langham_London-London_England.html'
+    }
   },
   {
     id: 'soho-hotel',
@@ -338,7 +378,11 @@ export const hotels = [
     strengths: ['Interiors with real design voice', 'Contextual in a culturally rich area'],
     weaknesses: ['Exterior not a standout architectural statement', 'Soho bustle can be noisy'],
     price: null,
-    tripAdvisorRating: null
+    tripAdvisor: {
+      rating: 4.8,
+      reviews: 1884,
+      url: 'https://www.tripadvisor.com/Hotel_Review-g186338-d497689-Reviews-The_Soho_Hotel-London_England.html'
+    }
   },
   {
     id: 'charlotte-street',
@@ -369,7 +413,11 @@ export const hotels = [
     strengths: ['Very design-driven interiors', 'Contextual and charismatic'],
     weaknesses: ['Exterior presence is modest — not a landmark on its own'],
     price: null,
-    tripAdvisorRating: null
+    tripAdvisor: {
+      rating: 4.7,
+      reviews: 941,
+      url: 'https://www.tripadvisor.com/Hotel_Review-g186338-d548133-Reviews-Charlotte_Street_Hotel-London_England.html'
+    }
   },
   {
     id: 'loscar-london',
@@ -400,7 +448,11 @@ export const hotels = [
     strengths: ['Exceptional sense of place and transformation', 'One of London\'s most charismatic hotel interiors'],
     weaknesses: ['The theatrical approach may not appeal to those who prefer minimal or understated design'],
     price: null,
-    tripAdvisorRating: null
+    tripAdvisor: {
+      rating: 4.8,
+      reviews: 782,
+      url: 'https://www.tripadvisor.com/Hotel_Review-g186338-d13867323-Reviews-L_oscar_London-London_England.html'
+    }
   }
 ];
 
