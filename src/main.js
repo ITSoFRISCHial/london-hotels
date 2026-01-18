@@ -153,17 +153,17 @@ function slugify(value) {
     .toLowerCase()
     .normalize('NFKD')
     .replace(/[\u0300-\u036f]/g, '')
-    .replace(/[^a-z0-9\\s-]/g, '')
+    .replace(/[^a-z0-9\s-]/g, '')
     .trim()
-    .replace(/[\\s-]+/g, '-');
+    .replace(/[\s-]+/g, '-');
 }
 
 function getSlugFromPath() {
   const pathname = window.location.pathname || '/';
   const withoutBase = pathname.startsWith(NORMALIZED_BASE)
     ? pathname.slice(NORMALIZED_BASE.length)
-    : pathname.replace(/^\\/+/, '');
-  const slug = withoutBase.replace(/^\\/+|\\/+$/g, '');
+    : pathname.replace(/^\/+/, '');
+  const slug = withoutBase.replace(/^\/+|\/+$/g, '');
   return slug || null;
 }
 
