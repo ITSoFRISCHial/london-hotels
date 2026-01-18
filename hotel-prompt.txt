@@ -1,0 +1,50 @@
+Evaluate the following London hotels from the perspective of an architect who cares deeply about design quality and sense of place. The hotel must feel architecturally interesting, distinctive, and intentional—either historically rich or thoughtfully modern. Avoid anything that feels basic, cookie-cutter, generic, or purely utilitarian, even if it is luxurious or well-reviewed.
+
+Luxury is welcome only if it is design-led and not a standard international chain experience. Quirky or refined-quirky is good; playful or understated both work as long as the architecture and interiors have character.
+
+For each hotel, analyze:
+	1.	Exterior & Urban Presence
+	•	Architectural style, historical significance, or modern design strength
+	•	How the building contributes to the street and neighborhood
+	2.	Interior Architecture & Materials
+	•	Spatial design, materials, lighting, and atmosphere
+	•	Whether it feels intentional and design-driven vs. generic
+	3.	Distinctiveness
+	•	How unique it feels compared to typical luxury or boutique hotels
+	4.	Neighborhood Quality
+	•	Preference for historic fabric and interesting streetscapes
+	•	Walkability and architectural interest of surrounding buildings
+	•	Strength of nearby food and shopping, especially design-oriented shops, galleries, and good independent restaurants
+	5.	Evening Bar Quality (Bonus)
+	•	A bar or lounge suitable for relaxed evening hanging out
+	•	Calm, atmospheric, and social—not nightclub-like or overly loud
+	6.	Noise Considerations
+	•	Note any consistent or serious noise complaints that would detract from the experience
+
+For each hotel, provide:
+	•	A short architectural/design summary
+	•	Strengths and weaknesses
+	•	A 1–10 score for:
+	•	Architectural interest
+	•	Interior design quality
+	•	Neighborhood name and appeal
+	•	Overall “architect fit”
+	•	A final verdict: Strong match, Good match, Marginal, or Not a fit
+	•	Walking distance to Elizabeth Line (and which station
+
+The goal is to identify hotels that an architect would find inspiring, memorable, and rooted in place—not merely comfortable or upscale.
+
+Hotels:
+The London EDITION
+The Resident Soho
+Radisson Blu Hotel, London Mercer Street
+The Bloomsbury Hotel
+The Marylebone
+The BoTree London, Curio Collection by Hilton
+The Welbeck Hotel
+The Biltmore Mayfair
+The Chesterfield Mayfair
+The Langham London
+The Soho Hotel
+Charlotte Street Hotel
+L'Oscar London
