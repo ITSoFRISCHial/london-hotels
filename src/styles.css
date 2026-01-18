@@ -439,8 +439,9 @@ body {
 }
 
 .route-stats {
-  display: flex;
-  gap: 24px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 16px;
 }
 
 .route-stat {
@@ -621,14 +622,7 @@ body {
 .elizabeth-line-icon {
   width: 20px;
   height: 20px;
-  background: #6366f1;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-size: 0.625rem;
-  font-weight: 700;
+  display: block;
 }
 
 .station-marker-name {

@@ -1,6 +1,7 @@
 import mapboxgl from 'mapbox-gl';
 import './styles.css';
 import { hotels, elizabethLineStations, verdictOrder, verdictColors } from './data/hotels.js';
+import elizabethLineIconUrl from '../Elizabeth_line_roundel_(no_text).svg';
 
 // You'll need to replace this with your actual Mapbox token
 // For production, use environment variables
@@ -18,6 +19,10 @@ let lightboxState = {
 };
 
 const PRICE_NOTE = 'for 3/16-3/21 (updated 1/18/26)';
+const ELIZABETH_LINE_TIMES = {
+  'tottenham-court-road': { train: 16, totalOffset: 28 },
+  'bond-street': { train: 17, totalOffset: 25 }
+};
 
 // Initialize the application
 function init() {
@@ -89,7 +94,7 @@ function addStationMarkers() {
     el.className = 'station-marker';
     el.innerHTML = `
       <div class="station-marker-content">
-        <div class="elizabeth-line-icon">E</div>
+        <img class="elizabeth-line-icon" src="${elizabethLineIconUrl}" alt="" />
         <span class="station-marker-name">${station.name}</span>
       </div>
     `;
@@ -332,6 +337,12 @@ function renderHotelDetail(hotel, nearestStation, routeData) {
     ? `<span class="detail-badge price">${hotel.price}/night</span>`
     : '';
 
+  const stationTimes = ELIZABETH_LINE_TIMES[nearestStation.id];
+  const trainTime = stationTimes ? stationTimes.train : null;
+  const totalTime = stationTimes && routeData
+    ? routeData.duration + stationTimes.totalOffset
+    : null;
+
   const priceNoteHtml = hotel.price
     ? `<div class="detail-price-note">
          <span>Rate is ${hotel.price}/night ${PRICE_NOTE}.</span>
@@ -374,6 +385,18 @@ function renderHotelDetail(hotel, nearestStation, routeData) {
             <span class="route-stat-value">${routeData.distance} mi</span>
             <span class="route-stat-label">Distance</span>
           </div>
+          ${trainTime !== null ? `
+            <div class="route-stat">
+              <span class="route-stat-value">${trainTime} min</span>
+              <span class="route-stat-label">Train time</span>
+            </div>
+          ` : ''}
+          ${totalTime !== null ? `
+            <div class="route-stat">
+              <span class="route-stat-value">${totalTime} min</span>
+              <span class="route-stat-label">Total travel</span>
+            </div>
+          ` : ''}
         </div>
         <div class="route-station">From ${nearestStation.name} station</div>
       </div>
