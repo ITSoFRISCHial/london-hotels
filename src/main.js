@@ -120,12 +120,14 @@ function addPteMarker() {
 
 function initMapDrawer() {
   const handle = document.getElementById('map-drawer-handle');
-  const sidebar = document.getElementById('sidebar');
   if (!handle) return;
 
   handle.addEventListener('click', () => {
     if (!window.matchMedia(MOBILE_QUERY).matches) return;
-    if (document.body.classList.contains('map-drawer-detail')) return;
+    if (document.body.classList.contains('map-drawer-detail')) {
+      setMapDrawerState('list');
+      return;
+    }
     const isExpanded = document.body.classList.contains('map-drawer-expanded');
     setMapDrawerState(isExpanded ? 'list' : 'expanded');
   });
@@ -147,9 +149,7 @@ function initMapDrawer() {
     setMapDrawerState('list');
   }
 
-  if (sidebar) {
-    initDrawerSwipe(sidebar);
-  }
+  initDrawerSwipe(handle);
 }
 
 function setMapDrawerState(state) {
@@ -160,20 +160,19 @@ function setMapDrawerState(state) {
   window.setTimeout(() => map?.resize(), 200);
 }
 
-function initDrawerSwipe(container) {
+function initDrawerSwipe(handle) {
   let startY = 0;
   let isDragging = false;
   const threshold = 40;
 
-  container.addEventListener('touchstart', (event) => {
+  handle.addEventListener('touchstart', (event) => {
     if (!window.matchMedia(MOBILE_QUERY).matches) return;
-    if (document.body.classList.contains('map-drawer-detail')) return;
     if (!event.touches || event.touches.length !== 1) return;
     startY = event.touches[0].clientY;
     isDragging = true;
   }, { passive: true });
 
-  container.addEventListener('touchmove', (event) => {
+  handle.addEventListener('touchmove', (event) => {
     if (!isDragging) return;
     if (!event.touches || event.touches.length !== 1) return;
     const deltaY = event.touches[0].clientY - startY;
@@ -182,11 +181,18 @@ function initDrawerSwipe(container) {
     }
   }, { passive: false });
 
-  container.addEventListener('touchend', (event) => {
+  handle.addEventListener('touchend', (event) => {
     if (!isDragging) return;
     if (!event.changedTouches || event.changedTouches.length !== 1) return;
     const deltaY = event.changedTouches[0].clientY - startY;
     isDragging = false;
+
+    if (document.body.classList.contains('map-drawer-detail')) {
+      if (deltaY > threshold) {
+        setMapDrawerState('list');
+      }
+      return;
+    }
 
     if (deltaY < -threshold) {
       setMapDrawerState('expanded');
