@@ -7,6 +7,8 @@ import pteLogoUrl from './img/PTE-World-2026-logo.jpeg';
 // You'll need to replace this with your actual Mapbox token
 // For production, use environment variables
 const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN || 'YOUR_MAPBOX_TOKEN';
+const BASE_URL = import.meta.env.BASE_URL || '/';
+const NORMALIZED_BASE = BASE_URL.endsWith('/') ? BASE_URL : `${BASE_URL}/`;
 
 mapboxgl.accessToken = MAPBOX_TOKEN;
 
@@ -19,6 +21,8 @@ let lightboxState = {
   index: 0
 };
 let detailMapContext = null;
+let mapReady = false;
+let pendingHotelId = null;
 
 const PRICE_NOTE = 'for 3/16-3/21 (updated 1/18/26)';
 const ELIZABETH_LINE_TIMES = {
@@ -28,11 +32,28 @@ const ELIZABETH_LINE_TIMES = {
 const MOBILE_QUERY = '(max-width: 768px)';
 const DETAIL_BOUNDS_PADDING = { top: 40, bottom: 40, left: 40, right: 40 };
 
+const slugToHotel = new Map();
+const hotelIdToSlug = new Map();
+
+hotels.forEach((hotel) => {
+  const baseSlug = slugify(hotel.name) || slugify(hotel.id) || hotel.id;
+  let slug = baseSlug;
+  let index = 2;
+  while (slugToHotel.has(slug)) {
+    slug = `${baseSlug}-${index}`;
+    index += 1;
+  }
+  slugToHotel.set(slug, hotel);
+  hotelIdToSlug.set(hotel.id, slug);
+});
+
 // Initialize the application
 function init() {
   initMap();
   renderHotelList();
   initMapDrawer();
+  handleRoute();
+  window.addEventListener('popstate', handleRoute);
 }
 
 // Initialize Mapbox map
@@ -45,9 +66,15 @@ function initMap() {
   });
 
   map.on('load', () => {
+    mapReady = true;
     addHotelMarkers();
     addStationMarkers();
     addPteMarker();
+    if (pendingHotelId) {
+      const nextHotelId = pendingHotelId;
+      pendingHotelId = null;
+      showHotelDetail(nextHotelId, { updateUrl: false });
+    }
   });
 
   // Add navigation controls
@@ -118,6 +145,66 @@ function addPteMarker() {
   new mapboxgl.Marker({ element: el, anchor: 'center' })
     .setLngLat([0.029086, 51.508211])
     .addTo(map);
+}
+
+function slugify(value) {
+  if (!value) return '';
+  return value
+    .toLowerCase()
+    .normalize('NFKD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9\\s-]/g, '')
+    .trim()
+    .replace(/[\\s-]+/g, '-');
+}
+
+function getSlugFromPath() {
+  const pathname = window.location.pathname || '/';
+  const withoutBase = pathname.startsWith(NORMALIZED_BASE)
+    ? pathname.slice(NORMALIZED_BASE.length)
+    : pathname.replace(/^\\/+/, '');
+  const slug = withoutBase.replace(/^\\/+|\\/+$/g, '');
+  return slug || null;
+}
+
+function updateUrlForHotel(hotel) {
+  const slug = hotelIdToSlug.get(hotel.id);
+  if (!slug) return;
+  const nextPath = `${NORMALIZED_BASE}${slug}`;
+  if (window.location.pathname !== nextPath) {
+    window.history.pushState({ hotelId: hotel.id }, '', nextPath);
+  }
+  document.title = `${hotel.name} | London Hotels`;
+}
+
+function updateUrlForList() {
+  if (window.location.pathname !== NORMALIZED_BASE) {
+    window.history.pushState({}, '', NORMALIZED_BASE);
+  }
+  document.title = 'London Hotels for Architects';
+}
+
+function handleRoute() {
+  const slug = getSlugFromPath();
+  if (!slug) {
+    detailMapContext = null;
+    renderHotelList();
+    setMapDrawerState('list');
+    return;
+  }
+
+  const hotel = slugToHotel.get(slug);
+  if (!hotel) {
+    updateUrlForList();
+    return;
+  }
+
+  if (!mapReady) {
+    pendingHotelId = hotel.id;
+    return;
+  }
+
+  showHotelDetail(hotel.id, { updateUrl: false });
 }
 
 function initMapDrawer() {
@@ -327,7 +414,7 @@ function createHotelCard(hotel) {
 }
 
 // Show hotel detail view
-async function showHotelDetail(hotelId) {
+async function showHotelDetail(hotelId, options = {}) {
   const hotel = hotels.find(h => h.id === hotelId);
   if (!hotel) return;
 
@@ -342,6 +429,9 @@ async function showHotelDetail(hotelId) {
   detailMapContext = { hotel, station: nearestStation };
   setMapDrawerState('detail');
   focusDetailMap(hotel, nearestStation);
+  if (options.updateUrl !== false) {
+    updateUrlForHotel(hotel);
+  }
 
   // Draw route on map
   if (routeData) {
@@ -764,6 +854,7 @@ window.backToList = function() {
 
   renderHotelList();
   setMapDrawerState('list');
+  updateUrlForList();
 };
 
 // Initialize on DOM ready
