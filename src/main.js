@@ -120,35 +120,83 @@ function addPteMarker() {
 
 function initMapDrawer() {
   const handle = document.getElementById('map-drawer-handle');
+  const sidebar = document.getElementById('sidebar');
   if (!handle) return;
 
   handle.addEventListener('click', () => {
-    const isMinimized = document.body.classList.contains('map-drawer-min');
-    setMapDrawerState(isMinimized ? 'max' : 'min');
+    if (!window.matchMedia(MOBILE_QUERY).matches) return;
+    if (document.body.classList.contains('map-drawer-detail')) return;
+    const isExpanded = document.body.classList.contains('map-drawer-expanded');
+    setMapDrawerState(isExpanded ? 'list' : 'expanded');
   });
 
   window.addEventListener('resize', () => {
     if (!window.matchMedia(MOBILE_QUERY).matches) {
-      document.body.classList.remove('map-drawer-min', 'map-drawer-max');
+      document.body.classList.remove('map-drawer-list', 'map-drawer-expanded', 'map-drawer-detail');
       map?.resize();
       return;
     }
-    if (!document.body.classList.contains('map-drawer-min') &&
-        !document.body.classList.contains('map-drawer-max')) {
-      setMapDrawerState('max');
+    if (!document.body.classList.contains('map-drawer-list') &&
+        !document.body.classList.contains('map-drawer-expanded') &&
+        !document.body.classList.contains('map-drawer-detail')) {
+      setMapDrawerState('list');
     }
   });
 
   if (window.matchMedia(MOBILE_QUERY).matches) {
-    setMapDrawerState('max');
+    setMapDrawerState('list');
+  }
+
+  if (sidebar) {
+    initDrawerSwipe(sidebar);
   }
 }
 
 function setMapDrawerState(state) {
   if (!window.matchMedia(MOBILE_QUERY).matches) return;
-  document.body.classList.toggle('map-drawer-min', state === 'min');
-  document.body.classList.toggle('map-drawer-max', state === 'max');
+  document.body.classList.toggle('map-drawer-list', state === 'list');
+  document.body.classList.toggle('map-drawer-expanded', state === 'expanded');
+  document.body.classList.toggle('map-drawer-detail', state === 'detail');
   window.setTimeout(() => map?.resize(), 200);
+}
+
+function initDrawerSwipe(container) {
+  let startY = 0;
+  let isDragging = false;
+  const threshold = 40;
+
+  container.addEventListener('touchstart', (event) => {
+    if (!window.matchMedia(MOBILE_QUERY).matches) return;
+    if (document.body.classList.contains('map-drawer-detail')) return;
+    if (!event.touches || event.touches.length !== 1) return;
+    startY = event.touches[0].clientY;
+    isDragging = true;
+  }, { passive: true });
+
+  container.addEventListener('touchmove', (event) => {
+    if (!isDragging) return;
+    if (!event.touches || event.touches.length !== 1) return;
+    const deltaY = event.touches[0].clientY - startY;
+    if (Math.abs(deltaY) > 8) {
+      event.preventDefault();
+    }
+  }, { passive: false });
+
+  container.addEventListener('touchend', (event) => {
+    if (!isDragging) return;
+    if (!event.changedTouches || event.changedTouches.length !== 1) return;
+    const deltaY = event.changedTouches[0].clientY - startY;
+    isDragging = false;
+
+    if (deltaY < -threshold) {
+      setMapDrawerState('expanded');
+      return;
+    }
+
+    if (deltaY > threshold) {
+      setMapDrawerState('list');
+    }
+  });
 }
 
 // Render hotel list in sidebar
@@ -272,7 +320,7 @@ async function showHotelDetail(hotelId) {
 
   // Render detail view
   renderHotelDetail(hotel, nearestStation, routeData);
-  setMapDrawerState('min');
+  setMapDrawerState('detail');
 
   // Draw route on map
   if (routeData) {
@@ -682,7 +730,7 @@ window.backToList = function() {
   });
 
   renderHotelList();
-  setMapDrawerState('max');
+  setMapDrawerState('list');
 };
 
 // Initialize on DOM ready
