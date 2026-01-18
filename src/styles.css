@@ -603,9 +603,9 @@ body {
 /* Station Marker */
 .station-marker {
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 6px;
+  position: relative;
+  width: 22px;
+  height: 22px;
   transform: translate(-50%, -50%);
 }
 
@@ -617,6 +617,10 @@ body {
 }
 
 .station-marker-name {
+  position: absolute;
+  left: calc(100% + 6px);
+  top: 50%;
+  transform: translateY(-50%);
   font-size: 0.75rem;
   font-weight: 600;
   color: var(--color-text);
